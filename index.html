@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harrington Capital | Private Gallery</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel to compile JSX in the browser instantly -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap');
+        .font-serif { font-family: 'Playfair Display', Georgia, serif; }
+        .font-sans { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Hide scrollbars for cinematic gallery */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#0B0B0C] text-[#E5E5E5] font-serif overflow-x-hidden antialiased">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Mock Asset Data
+        const ASSETS = [
+          {
+            id: 'asset-1',
+            title: 'The Palm Penthouse',
+            location: 'Palm Jumeirah, Dubai',
+            image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+            brochurePages: [
+              'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+              'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80',
+            ]
+          },
+          {
+            id: 'asset-2',
+            title: 'The Emirates Hills Mansion',
+            location: 'Emirates Hills, Dubai',
+            image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80',
+            brochurePages: [
+              'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80',
+              'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80',
+            ]
+          }
+        ];
+
+        function TrophyGallery() {
+          const [isEntered, setIsEntered] = useState(false);
+          const [activeAsset, setActiveAsset] = useState(null);
+          const [brochurePage, setBrochurePage] = useState(0);
+
+          return (
+            <div className="relative min-h-screen">
+              
+              {/* 1. GATED ENTRANCE PORTAL */}
+              {!isEntered && (
+                <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#070708]">
+                  {/* Decorative Architectural Split Lines */}
+                  <div className="absolute inset-0 flex pointer-events-none opacity-10">
+                    <div className="w-1/2 h-full border-r border-[#C5A880]" />
+                    <div className="w-1/2 h-full border-l border-[#C5A880]" />
+                  </div>
+
+                  {/* Centered Identity & Portal Trigger */}
+                  <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center">
+                    <img 
+                      src="Transparent logo.png" 
+                      alt="Harrington Capital Dubai Logo" 
+                      className="w-64 h-auto mb-12 opacity-90 select-none pointer-events-none"
+                      onError={(e) => { e.target.style.display = 'none'; }} // Fallback if logo isn't in repo yet
+                    />
+                    <h1 className="text-2xl text-[#C5A880] tracking-[0.2em] uppercase font-light mb-8">Harrington Capital</h1>
+                    <button
+                      onClick={() => setIsEntered(true)}
+                      className="tracking-[0.3em] uppercase text-[11px] text-[#C5A880] border border-[#C5A880]/30 px-8 py-4 bg-transparent backdrop-blur-sm transition-all duration-500 hover:border-[#C5A880] hover:text-white cursor-pointer"
+                    >
+                      Request Entry
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* 2. THE MAIN SHOWROOM */}
+              <main className={`min-h-screen flex flex-col justify-between p-8 lg:p-16 transition-opacity duration-1000 ${isEntered ? 'opacity-100' : 'opacity-0'}`}>
+                {/* Persistent Premium Header */}
+                <header className="flex justify-between items-center z-10">
+                  <h2 className="tracking-[0.3em] uppercase text-xs text-white font-light">Harrington</h2>
+                  <span className="tracking-[0.4em] uppercase text-[10px] text-[#C5A880] border-b border-[#C5A880]/20 pb-1">
+                    Private Collection
+                  </span>
+                </header>
+
+                {/* Horizontal Cinematic Asset Carousel */}
+                <div className="flex space-x-12 overflow-x-scroll py-12 scrollbar-hide snap-x snap-mandatory items-center my-auto min-h-[60vh]">
+                  {ASSETS.map((asset) => (
+                    <div 
+                      key={asset.id}
+                      onClick={() => { setActiveAsset(asset); setBrochurePage(0); }}
+                      className="relative min-w-[85vw] md:min-w-[60vw] lg:min-w-[45vw] h-[55vh] snap-center cursor-pointer group overflow-hidden bg-[#121214] transition-transform duration-500 hover:scale-[1.01]"
+                    >
+                      {/* Background Hero Asset Image */}
+                      <img 
+                        src={asset.image} 
+                        alt={asset.title} 
+                        className="w-full h-full object-cover opacity-40 transition-all duration-1000 ease-out group-hover:scale-105 group-hover:opacity-60" 
+                      />
+                      {/* Overlay Text Details */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0C] via-transparent to-transparent p-8 flex flex-col justify-end">
+                        <p className="text-[11px] tracking-[0.25em] uppercase text-[#C5A880] mb-2">{asset.location}</p>
+                        <h3 className="text-2xl md:text-3xl font-light text-white tracking-wide">{asset.title}</h3>
+                        <div className="mt-4 w-0 group-hover:w-16 h-[1px] bg-[#C5A880] transition-all duration-500 ease-out" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer Coordinates */}
+                <footer className="text-center text-[10px] tracking-[0.3em] uppercase text-[#555] z-10 font-sans">
+                  © 2026 Harrington Capital Dubai · Institutional Grade Trophy Assets
+                </footer>
+              </main>
+
+              {/* 3. INTERACTIVE BROCHURE MODAL */}
+              {activeAsset && (
+                <div className="fixed inset-0 z-50 bg-[#070708]/95 backdrop-blur-md flex items-center justify-center p-4">
+                  <div className="relative max-w-4xl w-full flex flex-col items-center">
+                    {/* Close Button */}
+                    <button 
+                      onClick={() => setActiveAsset(null)}
+                      className="absolute -top-12 right-0 tracking-[0.2em] text-[11px] uppercase text-[#C5A880] hover:text-white transition-colors cursor-pointer"
+                    >
+                      Exit Showroom [✕]
+                    </button>
+
+                    {/* Dynamic Brochure Page View */}
+                    <div className="w-full aspect-[4/3] bg-[#121214] shadow-2xl border border-[#1F1F22] flex items-center justify-center relative overflow-hidden">
+                      <img 
+                        src={activeAsset.brochurePages[brochurePage]} 
+                        alt={`Page ${brochurePage + 1}`}
+                        className="w-full h-full object-contain p-4"
+                      />
+                      
+                      {/* Left/Right Interactive Flips */}
+                      {brochurePage > 0 && (
+                        <button 
+                          onClick={() => setBrochurePage(p => p - 1)}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-[#C5A880] p-4 hover:text-white cursor-pointer"
+                        >
+                          ⟨
+                        </button>
+                      )}
+                      {brochurePage < activeAsset.brochurePages.length - 1 ? (
+                        <button 
+                          onClick={() => setBrochurePage(p => p + 1)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl text-[#C5A880] p-4 hover:text-white cursor-pointer"
+                        >
+                          ⟩
+                        </button>
+                      ) : (
+                        /* Final Private Call to Action Gating */
+                        <div className="absolute inset-0 bg-[#070708]/95 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center">
+                          <h4 className="text-xl text-white mb-2 tracking-wide">Acquisition Advisory</h4>
+                          <p className="text-xs text-[#888] max-w-md mb-6 leading-relaxed font-sans">To view full underwriting financials, layout schematics, and arrange a private viewing, please contact your advisory manager.</p>
+                          <a 
+                            href="mailto:advisory@harringtoncapital.ae"
+                            className="tracking-[0.2em] uppercase text-[10px] bg-[#C5A880] text-[#070708] font-bold px-6 py-3 transition-transform hover:scale-105"
+                          >
+                            Initiate Consultation
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Page Indicator */}
+                    <p className="text-[11px] tracking-[0.2em] text-[#555] mt-4 uppercase font-sans">
+                      Brochure Page {brochurePage + 1} of {activeAsset.brochurePages.length}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TrophyGallery />);
+    </script>
+</body>
+</html>
